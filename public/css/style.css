@@ -1158,4 +1158,63 @@ h3 { font-size: clamp(1.1rem, 3vw, 1.3rem); }
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+
+}
+
+/* ===================== ADMIN MOBILE RESPONSIVENESS ===================== */
+
+@media (max-width: 768px) {
+  /* Make the header stack vertically */
+  .admin-header {
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px;
+    text-align: center;
+  }
+
+  .admin-title {
+    justify-content: center;
+  }
+
+  /* Make nav buttons scrollable */
+  .admin-nav {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .admin-nav-btn {
+    flex: 1;
+    text-align: center;
+    font-size: 0.85rem;
+    padding: 8px 12px;
+  }
+
+  /* Make stat cards stack vertically */
+  .admin-stats {
+    grid-template-columns: 1fr;
+  }
+
+  /* 1. Make the Table Wrapper Scrollable */
+  .data-table-wrapper {
+    overflow-x: auto; /* This allows scrolling left/right */
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iPhone */
+    width: 100%;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+  }
+
+  /* 2. Force the Table to stay WIDE (This is the secret) */
+  /* This stops the table from shrinking to fit the phone screen */
+  .data-table table {
+    min-width: 900px; /* Forces the table to be wider than the phone */
+    width: 100%;
+  }
+
+  /* Ensure text doesn't wrap so rows stay straight */
+  .data-table th, 
+  .data-table td {
+    white-space: nowrap;
+    padding: 12px 15px;
+  }
 }
