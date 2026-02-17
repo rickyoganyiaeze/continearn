@@ -75,6 +75,10 @@ const UserSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+   acceptedPrivacy: {
+    type: Boolean,
+    default: false
+  },
   gameProgress: {
     ticTacToe: {
       currentLevel: { type: Number, default: 1 },
@@ -124,3 +128,4 @@ UserSchema.methods.getReferralLink = function() {
 
 
 module.exports = mongoose.model('User', UserSchema);
+
