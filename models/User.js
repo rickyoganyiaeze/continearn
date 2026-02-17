@@ -75,7 +75,7 @@ const UserSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
-   acceptedPrivacy: {
+  acceptedPrivacy: {
     type: Boolean,
     default: false
   },
@@ -122,10 +122,8 @@ UserSchema.methods.comparePassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
-UserSchema.methods.getReferralLink = function() {
+UserSchema.methods.getReferralLink = function () {
   return `https://continearn.name.ng/signup.html?invite=${this.referralCode}`;
 };
 
-
 module.exports = mongoose.model('User', UserSchema);
-
