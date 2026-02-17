@@ -1164,7 +1164,7 @@ h3 { font-size: clamp(1.1rem, 3vw, 1.3rem); }
 /* ===================== ADMIN MOBILE RESPONSIVENESS ===================== */
 
 @media (max-width: 768px) {
-  /* Make the header stack vertically */
+  /* Header adjustments */
   .admin-header {
     flex-direction: column;
     gap: 15px;
@@ -1176,7 +1176,6 @@ h3 { font-size: clamp(1.1rem, 3vw, 1.3rem); }
     justify-content: center;
   }
 
-  /* Make nav buttons scrollable */
   .admin-nav {
     width: 100%;
     justify-content: center;
@@ -1185,36 +1184,44 @@ h3 { font-size: clamp(1.1rem, 3vw, 1.3rem); }
 
   .admin-nav-btn {
     flex: 1;
-    text-align: center;
     font-size: 0.85rem;
     padding: 8px 12px;
   }
 
-  /* Make stat cards stack vertically */
   .admin-stats {
     grid-template-columns: 1fr;
   }
 
-  /* 1. Make the Table Wrapper Scrollable */
+  /* FORCE SCROLL ON TABLE */
+  
+  /* 1. Allow the wrapper to scroll */
   .data-table-wrapper {
-    overflow-x: auto; /* This allows scrolling left/right */
-    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iPhone */
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch; /* Smooth scroll on iPhone */
     width: 100%;
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
   }
 
-  /* 2. Force the Table to stay WIDE (This is the secret) */
-  /* This stops the table from shrinking to fit the phone screen */
+  /* 2. Override any "overflow: hidden" on the inner box */
+  .data-table {
+    display: block;
+    overflow-x: auto !important;
+    width: 100% !important;
+    max-width: 100%;
+  }
+
+  /* 3. Force the TABLE inside to be very wide */
   .data-table table {
-    min-width: 900px; /* Forces the table to be wider than the phone */
+    min-width: 900px; /* This forces the scroll */
     width: 100%;
+    border-collapse: collapse;
   }
 
-  /* Ensure text doesn't wrap so rows stay straight */
+  /* Keep text on one line so rows don't shrink */
   .data-table th, 
   .data-table td {
     white-space: nowrap;
-    padding: 12px 15px;
+    padding: 10px;
+    font-size: 0.9rem;
   }
 }
+
