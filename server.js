@@ -348,6 +348,17 @@ app.post('/api/auth/logout', auth, async (req, res) => {
   }
 });
 
+// Accept Privacy Policy
+app.post('/api/auth/accept-privacy', auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    user.acceptedPrivacy = true;
+    await user.save();
+    res.json({ success: true, message: 'Privacy policy accepted' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+
 // Get Current User
 app.get('/api/auth/me', auth, async (req, res) => {
   try {
@@ -373,7 +384,8 @@ app.get('/api/auth/me', auth, async (req, res) => {
         accountNumber: user.accountNumber,
         gameProgress: user.gameProgress,
         totalReferrals: user.referrals.length,
-        isAdmin: user.isAdmin // Return admin status
+        isAdmin: user.isAdmin, // Return admin status
+        acceptedPrivacy: user.acceptedPrivacy
       }
     });
   } catch (error) {
@@ -720,4 +732,5 @@ app.get('/api/banks', (req, res) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
+
 });
