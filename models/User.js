@@ -118,8 +118,9 @@ UserSchema.methods.comparePassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
-UserSchema.methods.getReferralLink = function () {
-  return `https://contiearn.name.ng/register?invite=${this.referralCode}`;
+UserSchema.methods.getReferralLink = function() {
+  return `https://continearn.name.ng/signup.html?invite=${this.referralCode}`;
 };
+
 
 module.exports = mongoose.model('User', UserSchema);
