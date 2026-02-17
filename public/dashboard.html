@@ -1,24 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Continearn Dashboard - View your balance, referral earnings, and access games">
- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1280676879896534"
-     crossorigin="anonymous"></script>
   <title>Dashboard - Continearn</title>
-    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
+  <!-- Loading Spinner -->
   <div class="loading-overlay" id="loadingOverlay">
     <div class="spinner"></div>
   </div>
 
+  <!-- Privacy Policy Modal (MUST BE BEFORE THE SCRIPT) -->
+  <div class="modal-overlay" id="privacyModal" style="z-index: 9999;">
+    <div class="modal" style="max-width: 500px; max-height: 80vh; overflow-y: auto;">
+      <div class="modal-header">
+        <h2>Privacy Policy</h2>
+        <p class="text-muted">Please read and accept to continue</p>
+      </div>
+
+      <div style="text-align: left; margin-bottom: 20px; font-size: 0.9rem; color: var(--fg-secondary); line-height: 1.6;">
+        <p><strong>Welcome to Continearn!</strong></p>
+        <p>By using our platform, you agree to the following:</p>
+        <ul style="margin-left: 20px; margin-top: 10px;">
+          <li><strong>Earnings:</strong> Coins earned in games can be converted to Naira based on our current rates.</li>
+          <li><strong>Withdrawals:</strong> Minimum withdrawal is ₦1,000 and is processed at the end of the month.</li>
+          <li><strong>Fair Play:</strong> Using bots or cheats will result in a permanent ban.</li>
+          <li><strong>Data:</strong> We collect your email, phone, and bank details solely for transactions and verification.</li>
+          <li><strong>Ads:</strong> We display advertisements to support the platform rewards.</li>
+        </ul>
+        <p style="margin-top: 15px;">Your data is safe with us. We do not sell your information to third parties.</p>
+      </div>
+
+      <button class="btn btn-primary btn-full btn-lg" id="acceptPrivacyBtn">
+        I Accept & Continue
+      </button>
+    </div>
+  </div>
+
+  <!-- Dashboard Content -->
   <div class="dashboard container" id="dashboardContent" style="display: none;">
     <div class="dashboard-header fade-in">
       <p class="user-greeting">Welcome back, <strong id="username">User</strong></p>
@@ -61,11 +91,11 @@
       </div>
       <div class="referral-stats">
         <div class="referral-stat">
-          <p class="referral-stat-value">500</p>
+          <p class="referral-stat-value">100</p>
           <p class="referral-stat-label">Coins/Referral</p>
         </div>
         <div class="referral-stat">
-          <p class="referral-stat-value">200</p>
+          <p class="referral-stat-value">50</p>
           <p class="referral-stat-label">Bonus for New</p>
         </div>
       </div>
@@ -91,7 +121,7 @@
     <div class="social-section fade-in stagger-4">
       <p class="social-title">Follow us on</p>
       <div class="social-links">
-         <a href="https://whatsapp.com/channel/0029VbCiZxa4IBhIV1VYnI23" class="social-link" title="WhatsApp">
+        <a href="https://whatsapp.com/channel/0029VbCiZxa4IBhIV1VYnI23" class="social-link" title="WhatsApp">
           <i class="fab fa-whatsapp"></i>
         </a>
         <a href="t.me/BhIV1VYnI23" class="social-link" title="Telegram">
@@ -110,13 +140,14 @@
 
   <div class="toast-container" id="toastContainer"></div>
 
+  <!-- Script placed AFTER the HTML elements -->
   <script>
     const token = localStorage.getItem('token');
-    
+
     if (!token) {
       window.location.href = 'index.html';
     }
-    
+
     async function loadDashboard() {
       try {
         const response = await fetch('/api/auth/me', {
@@ -124,40 +155,54 @@
             'Authorization': `Bearer ${token}`
           }
         });
-        
+
         const data = await response.json();
-        
+
         if (!data.success) {
           localStorage.removeItem('token');
           window.location.href = 'index.html';
           return;
         }
-        
+
         const user = data.user;
-        
-        document.getElementById('username').textContent = user.username;
-        document.getElementById('coinBalance').textContent = user.coins.toLocaleString();
-        document.getElementById('nairaBalance').textContent = user.naira.toFixed(2);
-        document.getElementById('totalReferrals').textContent = user.totalReferrals;
-        document.getElementById('referralLink').value = user.referralLink;
-        
+
+        // 1. Hide the spinner immediately once data is loaded
         document.getElementById('loadingOverlay').style.display = 'none';
-        document.getElementById('dashboardContent').style.display = 'block';
-        
+
+        // 2. Check if user accepted privacy policy
+        if (!user.acceptedPrivacy) {
+          // Show the modal
+          document.getElementById('privacyModal').classList.add('active');
+          // Stop here, don't load the dashboard content yet
+          return;
+        }
+
+        // 3. If accepted, populate dashboard
+        populateDashboard(user);
+
       } catch (error) {
         console.error('Error loading dashboard:', error);
         localStorage.removeItem('token');
         window.location.href = 'index.html';
       }
     }
-    
+
+    function populateDashboard(user) {
+      document.getElementById('username').textContent = user.username;
+      document.getElementById('coinBalance').textContent = user.coins.toLocaleString();
+      document.getElementById('nairaBalance').textContent = user.naira.toFixed(2);
+      document.getElementById('totalReferrals').textContent = user.totalReferrals;
+      document.getElementById('referralLink').value = user.referralLink;
+      document.getElementById('dashboardContent').style.display = 'block';
+    }
+
     function copyReferralLink() {
       const input = document.getElementById('referralLink');
       input.select();
       document.execCommand('copy');
       showToast('Referral link copied!', 'success');
     }
-    
+
     async function logout() {
       try {
         await fetch('/api/auth/logout', {
@@ -172,7 +217,31 @@
       localStorage.removeItem('token');
       window.location.href = 'index.html';
     }
-    
+
+    // Handle Accept Button Click
+    document.getElementById('acceptPrivacyBtn').addEventListener('click', async () => {
+      try {
+        const response = await fetch('/api/auth/accept-privacy', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          document.getElementById('privacyModal').classList.remove('active');
+          // Fetch user data again or simply populate from here
+          // Let's just run loadDashboard again, it will hide modal and show content
+          loadDashboard(); 
+        } else {
+          showToast('Error accepting policy', 'error');
+        }
+      } catch (error) {
+        showToast('Error', 'error');
+      }
+    });
+
     function showToast(message, type) {
       const container = document.getElementById('toastContainer');
       const toast = document.createElement('div');
@@ -184,11 +253,10 @@
       container.appendChild(toast);
       setTimeout(() => toast.remove(), 4000);
     }
-    
+
+    // Initialize
     loadDashboard();
   </script>
 </body>
 
 </html>
-
-
