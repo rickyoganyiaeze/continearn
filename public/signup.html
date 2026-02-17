@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Create your Continearn account - Start playing games and earning real money today!">
+  <meta name="keywords" content="sign up, register, earn money, play games, rewards">
+  <meta name="robots" content="index, follow">
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+  <meta property="og:title" content="Sign Up - Continearn">
+  <meta property="og:description" content="Create your free Continearn account and start earning">
+  <meta property="og:type" content="website">
+  <title>Sign Up - Continearn | Start Earning Today</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="auth-wrapper">
+    <div class="auth-logo fade-in">
+      <div class="auth-logo-icon">
+             <img src="/images/logo.png" alt="" width="50">
+      </div>
+      <span class="auth-logo-text">Continearn</span>
+    </div>
+
+    <!-- Ad Container -->
+    <div class="ad-container container fade-in stagger-1">
+      <div class="ad-placeholder">
+        <i class="fas fa-ad"></i> Advertisement Space
+      </div>
+    </div>
+
+    <div class="card auth-card fade-in stagger-2">
+      <div class="auth-header">
+        <h1>Create Account</h1>
+        <p class="text-muted">Join thousands of earners</p>
+      </div>
+
+      <form id="signupForm">
+        <div class="form-group">
+          <label class="form-label" for="username">Username</label>
+          <input type="text" id="username" name="username" class="form-input" placeholder="Choose a username" required minlength="3" autocomplete="username">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="email">Email Address</label>
+          <input type="email" id="email" name="email" class="form-input" placeholder="Enter your email" required autocomplete="email">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="phone">Phone Number</label>
+          <input type="tel" id="phone" name="phone" class="form-input" placeholder="e.g., 08012345678" required autocomplete="tel">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="password">Password</label>
+          <div class="password-wrapper">
+            <input type="password" id="password" name="password" class="form-input" placeholder="Create a password (min 6 characters)" required minlength="6" autocomplete="new-password">
+            <span class="password-toggle" onclick="togglePassword('password', this)">
+              <i class="fas fa-eye"></i>
+            </span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="referralCode">Referral Code (Optional)</label>
+          <input type="text" id="referralCode" name="referralCode" class="form-input" placeholder="Enter referral code for 200 coins bonus">
+        </div>
+
+        <div id="formError" class="form-error" style="display: none;"></div>
+        <div id="formSuccess" class="form-success" style="display: none;"></div>
+
+        <button type="submit" class="btn btn-primary btn-full btn-lg mt-2" id="submitBtn">
+          <span id="btnText">Create Account</span>
+          <span id="btnSpinner" style="display: none;"><i class="fas fa-spinner fa-spin"></i></span>
+        </button>
+      </form>
+
+      <div class="auth-footer">
+        <p>
+          Already have an account? <a href="index.html" class="text-accent">Sign in</a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script>
+    // Get referral code from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const inviteCode = urlParams.get('invite');
+    if (inviteCode) {
+      document.getElementById('referralCode').value = inviteCode;
+    }
+    
+    document.getElementById('signupForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const submitBtn = document.getElementById('submitBtn');
+      const btnText = document.getElementById('btnText');
+      const btnSpinner = document.getElementById('btnSpinner');
+      const formError = document.getElementById('formError');
+      const formSuccess = document.getElementById('formSuccess');
+      
+      submitBtn.disabled = true;
+      btnText.style.display = 'none';
+      btnSpinner.style.display = 'inline';
+      formError.style.display = 'none';
+      formSuccess.style.display = 'none';
+      
+      const formData = {
+        username: document.getElementById('username').value,
+        email: document.getElementById('email').value,
+        phone: document.getElementById('phone').value,
+        password: document.getElementById('password').value,
+        referralCode: document.getElementById('referralCode').value || undefined
+      };
+      
+      try {
+        const response = await fetch('/api/auth/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData)
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          localStorage.setItem('token', data.token);
+          formSuccess.textContent = 'Account created successfully! Redirecting...';
+          formSuccess.style.display = 'block';
+          showToast('Account created! Welcome to Continearn', 'success');
+          setTimeout(() => {
+            window.location.href = 'dashboard.html';
+          }, 1500);
+        } else {
+          formError.textContent = data.message;
+          formError.style.display = 'block';
+          submitBtn.disabled = false;
+          btnText.style.display = 'inline';
+          btnSpinner.style.display = 'none';
+        }
+      } catch (error) {
+        formError.textContent = 'An error occurred. Please try again.';
+        formError.style.display = 'block';
+        submitBtn.disabled = false;
+        btnText.style.display = 'inline';
+        btnSpinner.style.display = 'none';
+      }
+    });
+    
+    function showToast(message, type) {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.innerHTML = `
+        <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'} toast-icon"></i>
+        <span>${message}</span>
+      `;
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), 4000);
+    }
+
+      function togglePassword(inputId, iconSpan) {
+    const input = document.getElementById(inputId);
+    const icon = iconSpan.querySelector('i');
+    if (input.type === 'password') {
+      input.type = 'text';
+      icon.classList.remove('fa-eye');
+      icon.classList.add('fa-eye-slash');
+    } else {
+      input.type = 'password';
+      icon.classList.remove('fa-eye-slash');
+      icon.classList.add('fa-eye');
+    }
+  }
+  </script>
+</body>
+</html>

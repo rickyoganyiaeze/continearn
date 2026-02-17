@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Continearn Dashboard - View your balance, referral earnings, and access games">
+ 
+  <title>Dashboard - Continearn</title>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner"></div>
+  </div>
+
+  <div class="dashboard container" id="dashboardContent" style="display: none;">
+    <div class="dashboard-header fade-in">
+      <p class="user-greeting">Welcome back, <strong id="username">User</strong></p>
+    </div>
+
+    <!-- Balance Card -->
+    <div class="balance-card fade-in stagger-1">
+      <p class="balance-label">Available Balance</p>
+      <p class="balance-amount">
+        <span class="currency">₦</span><span id="nairaBalance">0.00</span>
+      </p>
+    </div>
+
+    <div class="balance-row fade-in stagger-2">
+      <div class="balance-item">
+        <p class="text-muted" style="font-size: 0.85rem;">Coins</p>
+        <p style="font-size: 1.5rem; font-weight: 700; color: var(--accent-primary);">
+          <i class="fas fa-coins"></i> <span id="coinBalance">0</span>
+        </p>
+      </div>
+      <div class="balance-item">
+        <p class="text-muted" style="font-size: 0.85rem;">Referrals</p>
+        <p style="font-size: 1.5rem; font-weight: 700; color: var(--accent-primary);">
+          <i class="fas fa-users"></i> <span id="totalReferrals">0</span>
+        </p>
+      </div>
+    </div>
+
+    <!-- Referral Card -->
+    <div class="referral-card fade-in stagger-3">
+      <div class="referral-title">
+        <i class="fas fa-link text-accent"></i>
+        <span>Referral Link</span>
+      </div>
+      <div class="referral-link-box">
+        <input type="text" class="referral-link-input" id="referralLink" readonly>
+        <button class="btn btn-sm btn-primary" onclick="copyReferralLink()">
+          <i class="fas fa-copy"></i>
+        </button>
+      </div>
+      <div class="referral-stats">
+        <div class="referral-stat">
+          <p class="referral-stat-value">500</p>
+          <p class="referral-stat-label">Coins/Referral</p>
+        </div>
+        <div class="referral-stat">
+          <p class="referral-stat-value">200</p>
+          <p class="referral-stat-label">Bonus for New</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-grid fade-in stagger-4">
+      <a href="games.html" class="action-btn">
+        <div class="action-btn-icon">
+          <i class="fas fa-gamepad"></i>
+        </div>
+        <span class="action-btn-text">Play Games</span>
+      </a>
+      <a href="withdraw.html" class="action-btn">
+        <div class="action-btn-icon">
+          <i class="fas fa-wallet"></i>
+        </div>
+        <span class="action-btn-text">Withdraw</span>
+      </a>
+    </div>
+
+    <!-- Social Links -->
+    <div class="social-section fade-in stagger-4">
+      <p class="social-title">Follow us on</p>
+      <div class="social-links">
+        <a href="#" class="social-link" title="WhatsApp">
+          <i class="fab fa-whatsapp"></i>
+        </a>
+        <a href="#" class="social-link" title="Telegram">
+          <i class="fab fa-telegram"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- Logout -->
+    <div class="text-center mt-4">
+      <button class="btn btn-secondary btn-sm" onclick="logout()">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </button>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script>
+    const token = localStorage.getItem('token');
+    
+    if (!token) {
+      window.location.href = 'index.html';
+    }
+    
+    async function loadDashboard() {
+      try {
+        const response = await fetch('/api/auth/me', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        const data = await response.json();
+        
+        if (!data.success) {
+          localStorage.removeItem('token');
+          window.location.href = 'index.html';
+          return;
+        }
+        
+        const user = data.user;
+        
+        document.getElementById('username').textContent = user.username;
+        document.getElementById('coinBalance').textContent = user.coins.toLocaleString();
+        document.getElementById('nairaBalance').textContent = user.naira.toFixed(2);
+        document.getElementById('totalReferrals').textContent = user.totalReferrals;
+        document.getElementById('referralLink').value = user.referralLink;
+        
+        document.getElementById('loadingOverlay').style.display = 'none';
+        document.getElementById('dashboardContent').style.display = 'block';
+        
+      } catch (error) {
+        console.error('Error loading dashboard:', error);
+        localStorage.removeItem('token');
+        window.location.href = 'index.html';
+      }
+    }
+    
+    function copyReferralLink() {
+      const input = document.getElementById('referralLink');
+      input.select();
+      document.execCommand('copy');
+      showToast('Referral link copied!', 'success');
+    }
+    
+    async function logout() {
+      try {
+        await fetch('/api/auth/logout', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+      } catch (error) {
+        console.error('Logout error:', error);
+      }
+      localStorage.removeItem('token');
+      window.location.href = 'index.html';
+    }
+    
+    function showToast(message, type) {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.innerHTML = `
+        <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'} toast-icon"></i>
+        <span>${message}</span>
+      `;
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), 4000);
+    }
+    
+    loadDashboard();
+  </script>
+</body>
+</html>

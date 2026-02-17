@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Withdraw your Continearn earnings to your bank account">
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+  <title>Withdraw - Continearn</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner"></div>
+  </div>
+
+  <div class="dashboard container" id="withdrawContent" style="display: none;">
+    <!-- Header -->
+    <div class="dashboard-header fade-in">
+      <a href="dashboard.html" class="btn btn-sm btn-secondary mb-2">
+        <i class="fas fa-arrow-left"></i> Back
+      </a>
+      <h1>Withdraw Earnings</h1>
+    </div>
+
+    <!-- Balance Display -->
+    <div class="withdraw-balance fade-in stagger-1">
+      <p class="text-muted">Available Balance</p>
+      <p class="withdraw-balance-value">₦<span id="availableBalance">0.00</span></p>
+      <p class="text-muted" style="font-size: 0.85rem;"><i class="fas fa-coins"></i> <span id="coinBalance">0</span> coins</p>
+    </div>
+
+    <!-- Info Box -->
+    <div class="withdraw-info fade-in stagger-2">
+      <div class="withdraw-note">
+        <i class="fas fa-info-circle"></i>
+        <p><strong>Withdrawal Rules:</strong></p>
+        <ul style="margin: 8px 0 0 16px; font-size: 0.85rem;">
+          <li>Minimum withdrawal: ₦1,000</li>
+          <li>Withdrawals allowed at end of month (last 3 days)</li>
+          <li>Processing time: 1-3 business days</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Withdrawal Form -->
+    <div class="card fade-in stagger-3">
+      <h3 style="margin-bottom: 20px;"><i class="fas fa-paper-plane text-accent"></i> Request Withdrawal</h3>
+
+      <form id="withdrawForm">
+        <div class="form-group">
+          <label class="form-label" for="bankName">Bank Name</label>
+          <select id="bankName" class="form-input form-select" required>
+            <option value="">Select your bank</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="accountName">Account Name</label>
+          <input type="text" id="accountName" class="form-input" placeholder="Enter account name" required autocomplete="name">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="accountNumber">Account Number</label>
+          <input type="text" id="accountNumber" class="form-input" placeholder="Enter 10-digit account number" required maxlength="10" pattern="[0-9]{10}" autocomplete="off">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="amount">Amount (₦)</label>
+          <input type="number" id="amount" class="form-input" placeholder="Minimum: ₦1,000" min="1000" step="1" required>
+          <p class="text-muted" style="font-size: 0.8rem; margin-top: 4px;">Available: ₦<span id="maxAmount">0.00</span></p>
+        </div>
+
+        <div id="formError" class="form-error" style="display: none;"></div>
+        <div id="formSuccess" class="form-success" style="display: none;"></div>
+
+        <button type="submit" class="btn btn-primary btn-full btn-lg" id="submitBtn">
+          <span id="btnText">Submit Request</span>
+          <span id="btnSpinner" style="display: none;"><i class="fas fa-spinner fa-spin"></i></span>
+        </button>
+      </form>
+    </div>
+
+    <!-- Withdrawal History -->
+    <div class="card mt-3 fade-in stagger-4">
+      <h3 style="margin-bottom: 16px;"><i class="fas fa-history text-accent"></i> Withdrawal History</h3>
+      <div id="historyContainer">
+        <p class="text-muted text-center">No withdrawal history</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script>
+    const token = localStorage.getItem('token');
+    let userData = { naira: 0, coins: 0 };
+
+    if (!token) {
+      window.location.href = 'index.html';
+    }
+
+    async function init() {
+      try {
+        // Load user data
+        const userRes = await fetch('/api/auth/me', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const userDataRes = await userRes.json();
+
+        if (!userDataRes.success) {
+          localStorage.removeItem('token');
+          window.location.href = 'index.html';
+          return;
+        }
+
+        userData = userDataRes.user;
+        document.getElementById('availableBalance').textContent = userData.naira.toFixed(2);
+        document.getElementById('coinBalance').textContent = userData.coins.toLocaleString();
+        document.getElementById('maxAmount').textContent = userData.naira.toFixed(2);
+
+        // Pre-fill bank details if available
+        if (userData.bankName) document.getElementById('bankName').value = userData.bankName;
+        if (userData.accountName) document.getElementById('accountName').value = userData.accountName;
+        if (userData.accountNumber) document.getElementById('accountNumber').value = userData.accountNumber;
+
+        // Load banks
+        const banksRes = await fetch('/api/banks');
+        const banksData = await banksRes.json();
+        
+        if (banksData.success) {
+          const bankSelect = document.getElementById('bankName');
+          banksData.banks.forEach(bank => {
+            const option = document.createElement('option');
+            option.value = bank;
+            option.textContent = bank;
+            bankSelect.appendChild(option);
+          });
+        }
+
+        // Load withdrawal history
+        await loadHistory();
+
+        document.getElementById('loadingOverlay').style.display = 'none';
+        document.getElementById('withdrawContent').style.display = 'block';
+
+      } catch (error) {
+        console.error('Init error:', error);
+        showToast('Failed to load data', 'error');
+      }
+    }
+
+    async function loadHistory() {
+      try {
+        const res = await fetch('/api/withdraw/history', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+
+        if (data.success && data.withdrawals.length > 0) {
+          const container = document.getElementById('historyContainer');
+          container.innerHTML = data.withdrawals.map(w => `
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border-color);">
+              <div>
+                <p style="font-weight: 600;">₦${w.amount.toLocaleString()}</p>
+                <p class="text-muted" style="font-size: 0.8rem;">${new Date(w.requestedAt).toLocaleDateString()}</p>
+              </div>
+              <span class="status-badge status-${w.status}">${w.status}</span>
+            </div>
+          `).join('');
+        }
+      } catch (error) {
+        console.error('History load error:', error);
+      }
+    }
+
+    document.getElementById('withdrawForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const submitBtn = document.getElementById('submitBtn');
+      const btnText = document.getElementById('btnText');
+      const btnSpinner = document.getElementById('btnSpinner');
+      const formError = document.getElementById('formError');
+      const formSuccess = document.getElementById('formSuccess');
+
+      const amount = parseFloat(document.getElementById('amount').value);
+      const bankName = document.getElementById('bankName').value;
+      const accountName = document.getElementById('accountName').value;
+      const accountNumber = document.getElementById('accountNumber').value;
+
+      // Client-side validation
+      if (amount < 1000) {
+        formError.textContent = 'Minimum withdrawal is ₦1,000.';
+        formError.style.display = 'block';
+        return;
+      }
+
+      if (amount > userData.naira) {
+        formError.textContent = "You don't have enough balance.";
+        formError.style.display = 'block';
+        return;
+      }
+
+      formError.style.display = 'none';
+      formSuccess.style.display = 'none';
+      submitBtn.disabled = true;
+      btnText.style.display = 'none';
+      btnSpinner.style.display = 'inline';
+
+      try {
+        const response = await fetch('/api/withdraw/request', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ amount, bankName, accountName, accountNumber })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          formSuccess.textContent = data.message;
+          formSuccess.style.display = 'block';
+          showToast('Withdrawal request submitted!', 'success');
+          
+          userData.naira = data.newBalance;
+          document.getElementById('availableBalance').textContent = data.newBalance.toFixed(2);
+          document.getElementById('maxAmount').textContent = data.newBalance.toFixed(2);
+          document.getElementById('amount').value = '';
+          
+          await loadHistory();
+        } else {
+          formError.textContent = data.message;
+          formError.style.display = 'block';
+        }
+      } catch (error) {
+        formError.textContent = 'An error occurred. Please try again.';
+        formError.style.display = 'block';
+      } finally {
+        submitBtn.disabled = false;
+        btnText.style.display = 'inline';
+        btnSpinner.style.display = 'none';
+      }
+    });
+
+    function showToast(message, type) {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.innerHTML = `
+        <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'} toast-icon"></i>
+        <span>${message}</span>
+      `;
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), 4000);
+    }
+
+    init();
+  </script>
+</body>
+</html>

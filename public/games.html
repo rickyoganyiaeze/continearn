@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="Play games on Continearn to earn coins. Choose Tic-Tac-Toe or Tap Tap and start earning now!">
+  
+  <title>Play Games - Continearn</title>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner"></div>
+  </div>
+
+  <div class="dashboard container" id="gamesContent" style="display: none;">
+    <!-- Header -->
+    <div class="games-header fade-in">
+      <a href="dashboard.html" class="btn btn-sm btn-secondary mb-2">
+        <i class="fas fa-arrow-left"></i> Back
+      </a>
+      <h1>Play & Earn</h1>
+      <div class="games-balance">
+        <i class="fas fa-coins text-accent"></i>
+        <span id="coinDisplay">0</span> coins
+        <span style="margin: 0 8px; color: var(--fg-muted);">|</span>
+        <span style="color: var(--accent-primary);">₦<span id="nairaDisplay">0.00</span></span>
+      </div>
+    </div>
+
+    <!-- Game Tabs -->
+    <div class="games-tabs fade-in stagger-1">
+      <button class="games-tab active" data-game="tictactoe">
+        <i class="fas fa-th"></i> Tic-Tac-Toe
+      </button>
+      <button class="games-tab" data-game="taptap">
+        <i class="fas fa-hand-pointer"></i> Tap Tap
+      </button>
+      <button class="games-tab" data-game="rps">
+        <i class="fas fa-hand-back-fist"></i> Rock Paper Scissors
+      </button>
+    </div>
+
+    <!-- Tic-Tac-Toe Game -->
+    <div class="game-container active" id="tictactoe-container">
+      <!-- Ad before game -->
+      <div class="ad-container fade-in">
+        <div class="ad-placeholder"><i class="fas fa-ad"></i> Advertisement</div>
+      </div>
+
+      <div class="card fade-in stagger-2">
+        <div class="ttt-level-info">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <p class="text-muted" style="font-size: 0.85rem;">Current Level</p>
+              <p style="font-size: 1.5rem; font-weight: 700;">Level <span id="tttLevel">1</span></p>
+            </div>
+            <div style="text-align: right;">
+              <p class="text-muted" style="font-size: 0.85rem;">Reward</p>
+              <p style="font-size: 1.2rem; font-weight: 600; color: var(--accent-primary);">
+                <span id="tttCoins">20</span> coins (₦<span id="tttNaira">0.40</span>)
+              </p>
+              <p class="text-muted" style="font-size: 0.75rem;"><span id="tttDifficulty">Very Easy</span></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="ttt-status">
+          <p id="tttStatusText">Your turn! You are <span style="color: var(--accent-primary);">X</span></p>
+        </div>
+
+        <div class="ttt-board" id="tttBoard">
+          <button class="ttt-cell" data-index="0"></button>
+          <button class="ttt-cell" data-index="1"></button>
+          <button class="ttt-cell" data-index="2"></button>
+          <button class="ttt-cell" data-index="3"></button>
+          <button class="ttt-cell" data-index="4"></button>
+          <button class="ttt-cell" data-index="5"></button>
+          <button class="ttt-cell" data-index="6"></button>
+          <button class="ttt-cell" data-index="7"></button>
+          <button class="ttt-cell" data-index="8"></button>
+        </div>
+
+        <button class="btn btn-secondary btn-full" id="tttRestart">
+          <i class="fas fa-redo"></i> Restart Game
+        </button>
+      </div>
+
+      <!-- Levels Table -->
+      <div class="card mt-3 fade-in stagger-3">
+        <h3 style="margin-bottom: 12px;"><i class="fas fa-list-ol text-accent"></i> Level Rewards</h3>
+        <div style="overflow-x: auto;">
+          <table class="levels-table" id="tttLevelsTable">
+            <thead>
+              <tr>
+                <th>Level</th>
+                <th>Coins</th>
+                <th>Naira</th>
+                <th>Difficulty</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tap Tap Game -->
+    <div class="game-container" id="taptap-container">
+      <!-- Ad before game -->
+      <div class="ad-container fade-in">
+        <div class="ad-placeholder"><i class="fas fa-ad"></i> Advertisement</div>
+      </div>
+
+      <div class="card fade-in stagger-2">
+        <div class="ttt-level-info">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <p class="text-muted" style="font-size: 0.85rem;">Current Level</p>
+              <p style="font-size: 1.5rem; font-weight: 700;">Level <span id="tapLevel">1</span></p>
+            </div>
+            <div style="text-align: right;">
+              <p class="text-muted" style="font-size: 0.85rem;">Target</p>
+              <p style="font-size: 1.2rem; font-weight: 600;">
+                <span id="tapTarget">20</span> taps in <span id="tapTime">30</span>s
+              </p>
+              <p class="text-muted" style="font-size: 0.75rem;">Reward: <span id="tapReward">15</span> coins</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="taptap-stats">
+          <div class="taptap-stat">
+            <p class="taptap-stat-value" id="tapCount">0</p>
+            <p class="taptap-stat-label">Taps</p>
+          </div>
+          <div class="taptap-stat">
+            <p class="taptap-stat-value" id="timeLeft">30</p>
+            <p class="taptap-stat-label">Seconds</p>
+          </div>
+        </div>
+
+        <div class="taptap-container">
+          <div class="taptap-target" id="tapTargetBtn">
+            <span id="tapText">TAP!</span>
+          </div>
+        </div>
+
+        <div class="text-center mt-2">
+          <button class="btn btn-primary" id="startTapGame">
+            <i class="fas fa-play"></i> Start Game
+          </button>
+          <button class="btn btn-secondary" id="resetTapGame" style="display: none;">
+            <i class="fas fa-redo"></i> Play Again
+          </button>
+        </div>
+      </div>
+
+      <!-- Levels Table -->
+      <div class="card mt-3 fade-in stagger-3">
+        <h3 style="margin-bottom: 12px;"><i class="fas fa-list-ol text-accent"></i> Level Rewards</h3>
+        <div style="overflow-x: auto;">
+          <table class="levels-table" id="tapLevelsTable">
+            <thead>
+              <tr>
+                <th>Level</th>
+                <th>Time</th>
+                <th>Taps</th>
+                <th>Coins</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Claim Reward Modal -->
+  <div class="modal-overlay" id="claimModal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-icon">
+          <i class="fas fa-trophy"></i>
+        </div>
+        <h2>Congratulations!</h2>
+        <p class="text-muted" id="claimMessage">You won!</p>
+      </div>
+
+      <!-- Ad before claim -->
+      <div class="ad-container">
+        <div class="ad-placeholder"><i class="fas fa-ad"></i> Advertisement</div>
+      </div>
+
+      <div class="text-center mt-3">
+        <p style="font-size: 2rem; font-weight: 800; color: var(--accent-primary);">
+          +<span id="claimCoins">0</span> coins
+        </p>
+        <p style="font-size: 1.2rem; color: var(--fg-secondary);">
+          ₦<span id="claimNaira">0</span>
+        </p>
+        <p id="bonusText" style="color: var(--warning); font-size: 0.9rem; display: none;"></p>
+      </div>
+
+      <button class="btn btn-primary btn-full btn-lg mt-3" id="claimBtn">
+        <i class="fas fa-gift"></i> Claim Reward
+      </button>
+    </div>
+  </div>
+
+      <!-- Rock Paper Scissors Game -->
+    <div class="game-container" id="rps-container">
+      <!-- Ad before game -->
+      <div class="ad-container fade-in">
+        <div class="ad-placeholder"><i class="fas fa-ad"></i> Advertisement</div>
+      </div>
+
+      <div class="card fade-in stagger-2">
+        <div class="ttt-level-info">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <p class="text-muted" style="font-size: 0.85rem;">Current Level</p>
+              <p style="font-size: 1.5rem; font-weight: 700;">Level <span id="rpsLevel">1</span></p>
+            </div>
+            <div style="text-align: right;">
+              <p class="text-muted" style="font-size: 0.85rem;">Reward</p>
+              <p style="font-size: 1.2rem; font-weight: 600; color: var(--accent-primary);">
+                <span id="rpsCoins">20</span> coins (₦<span id="rpsNaira">0.40</span>)
+              </p>
+              <p class="text-muted" style="font-size: 0.75rem;"><span id="rpsDifficulty">Very Easy</span></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Result Display Area -->
+        <div style="text-align: center; margin-bottom: 24px;">
+          <div style="display: flex; justify-content: space-around; align-items: center; margin-bottom: 16px;">
+            <div>
+              <p class="text-muted" style="font-size: 0.8rem;">You</p>
+              <div id="rpsPlayerChoice" style="font-size: 3rem; min-height: 60px;">
+                <i class="fas fa-question" style="color: var(--fg-muted);"></i>
+              </div>
+            </div>
+            <div style="font-size: 1.5rem; font-weight: 700; color: var(--fg-muted);">VS</div>
+            <div>
+              <p class="text-muted" style="font-size: 0.8rem;">Computer</p>
+              <div id="rpsComputerChoice" style="font-size: 3rem; min-height: 60px;">
+                <i class="fas fa-question" style="color: var(--fg-muted);"></i>
+              </div>
+            </div>
+          </div>
+          <h3 id="rpsResultText" style="min-height: 30px;"></h3>
+        </div>
+
+        <!-- Controls -->
+        <div style="display: flex; justify-content: center; gap: 16px; margin-bottom: 24px;">
+          <button class="rps-btn" onclick="playRPS('rock')" title="Rock">
+            <i class="fas fa-hand-back-fist"></i>
+          </button>
+          <button class="rps-btn" onclick="playRPS('paper')" title="Paper">
+            <i class="fas fa-hand"></i>
+          </button>
+          <button class="rps-btn" onclick="playRPS('scissors')" title="Scissors">
+            <i class="fas fa-hand-scissors"></i>
+          </button>
+        </div>
+
+        <style>
+          .rps-btn {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 2px solid var(--border-color);
+            background: var(--bg-secondary);
+            color: var(--accent-primary);
+            font-size: 2rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+          }
+          .rps-btn:hover {
+            background: var(--accent-primary);
+            color: var(--bg-primary);
+            transform: scale(1.1);
+            border-color: var(--accent-primary);
+          }
+          .rps-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+          }
+        </style>
+
+        <div id="rpsStatusText" class="text-center text-muted">Choose Rock, Paper, or Scissors to play!</div>
+      </div>
+
+      <!-- Levels Table -->
+      <div class="card mt-3 fade-in stagger-3">
+        <h3 style="margin-bottom: 12px;"><i class="fas fa-list-ol text-accent"></i> Level Rewards</h3>
+        <div style="overflow-x: auto;">
+          <table class="levels-table" id="rpsLevelsTable">
+            <thead>
+              <tr>
+                <th>Level</th>
+                <th>Coins</th>
+                <th>Naira</th>
+                <th>Difficulty</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  <div class="toast-container" id="toastContainer"></div>
+
+  
+
+  <script src="js/games.js"></script>
+</body>
+
+</html>
