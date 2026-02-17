@@ -179,17 +179,16 @@ app.post('/api/auth/signup', async (req, res) => {
       user.isAdmin = true;
     }
 
-    // Handle referral
     if (referralCode) {
       const referrer = await User.findOne({ referralCode });
       if (referrer) {
         user.referrer = referrer._id;
-        // Give new user bonus
-        user.coins = 200;
-        user.naira = 4;
-        // Give referrer bonus
-        referrer.coins += 500;
-        referrer.naira += 10;
+        // Give new user bonus (50 coins)
+        user.coins = 50;
+        user.naira = 1; // 50 coins = ₦1
+        // Give referrer bonus (100 coins)
+        referrer.coins += 100;
+        referrer.naira += 2; // 100 coins = ₦2
         referrer.referrals.push(user._id);
         await referrer.save();
       }
@@ -358,7 +357,7 @@ app.post('/api/auth/accept-privacy', auth, async (req, res) => {
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
-
+});
 // Get Current User
 app.get('/api/auth/me', auth, async (req, res) => {
   try {
@@ -513,19 +512,19 @@ app.post('/api/games/rps/claim', auth, async (req, res) => {
   try {
     const { level } = req.body;
     const user = await User.findById(req.user._id);
-    
+
     if (level > user.gameProgress.rps.highestLevel) {
       return res.status(400).json({ success: false, message: 'Level not unlocked' });
     }
-    
+
     const levelData = RPS_LEVELS[level - 1];
     if (!levelData) {
       return res.status(400).json({ success: false, message: 'Invalid level' });
     }
-    
+
     user.coins += levelData.coins;
     user.naira += levelData.naira;
-    
+
     if (level >= user.gameProgress.rps.currentLevel && level < 20) {
       user.gameProgress.rps.currentLevel = level + 1;
       user.gameProgress.rps.highestLevel = Math.max(
@@ -533,9 +532,9 @@ app.post('/api/games/rps/claim', auth, async (req, res) => {
         level + 1
       );
     }
-    
+
     await user.save();
-    
+
     res.json({
       success: true,
       message: `Claimed ${levelData.coins} coins (₦${levelData.naira.toFixed(2)})`,
@@ -732,5 +731,4 @@ app.get('/api/banks', (req, res) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
-
 });
