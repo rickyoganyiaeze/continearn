@@ -1158,9 +1158,68 @@ h3 { font-size: clamp(1.1rem, 3vw, 1.3rem); }
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-
 }
 
+/* ===================== ADMIN MOBILE RESPONSIVENESS ===================== */
 
+@media (max-width: 768px) {
+  /* Header adjustments */
+  .admin-header {
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px;
+    text-align: center;
+  }
 
+  .admin-title {
+    justify-content: center;
+  }
 
+  .admin-nav {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .admin-nav-btn {
+    flex: 1;
+    font-size: 0.85rem;
+    padding: 8px 12px;
+  }
+
+  .admin-stats {
+    grid-template-columns: 1fr;
+  }
+
+  /* FORCE SCROLL ON TABLE */
+  
+  /* 1. Allow the wrapper to scroll */
+  .data-table-wrapper {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch; /* Smooth scroll on iPhone */
+    width: 100%;
+  }
+
+  /* 2. Override any "overflow: hidden" on the inner box */
+  .data-table {
+    display: block;
+    overflow-x: auto !important;
+    width: 100% !important;
+    max-width: 100%;
+  }
+
+  /* 3. Force the TABLE inside to be very wide */
+  .data-table table {
+    min-width: 900px; /* This forces the scroll */
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  /* Keep text on one line so rows don't shrink */
+  .data-table th, 
+  .data-table td {
+    white-space: nowrap;
+    padding: 10px;
+    font-size: 0.9rem;
+  }
+}
