@@ -628,7 +628,7 @@ app.get('/api/admin/users', adminAuth, async (req, res) => {
     const users = await User.find({})
       .select('-password')
       .populate('referrer', 'username');
-
+    
     res.json({
       success: true,
       users: users.map(user => ({
@@ -643,7 +643,7 @@ app.get('/api/admin/users', adminAuth, async (req, res) => {
         naira: user.naira,
         totalReferrals: user.referrals.length,
         referrer: user.referrer?.username || 'None',
-        status: user.isOnline ? 'Online' : 'Offline',
+        status: user.isOnline ? 'Online' : 'Offline', // THIS LINE IS IMPORTANT
         createdAt: user.createdAt,
         lastLogin: user.lastLogin
       }))
