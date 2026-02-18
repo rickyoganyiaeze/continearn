@@ -68,7 +68,7 @@ const UserSchema = new mongoose.Schema({
   },
   isOnline: {
     type: Boolean,
-    default: false
+    default: true
   },
   // This is the Admin field added correctly
   isAdmin: {
