@@ -293,8 +293,8 @@ app.post('/api/auth/forgot-password', async (req, res) => {
     // Send email
     const resetUrl = `${req.protocol}://${req.get('host')}/reset-password.html?token=${resetToken}`;
 
-    await transporter.sendMail({
-      from: process.env.SMTP_USER,
+ await transporter.sendMail({
+      from: '"Continearn" <rickyoganyiaeze@gmail.com>', // Use your verified Gmail here
       to: user.email,
       subject: 'Continearn - Reset Your Password',
       html: `
@@ -735,5 +735,6 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
 
 
