@@ -25,11 +25,11 @@ mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('MongoDB Connected'))
   .catch(err => console.error('MongoDB Connection Error:', err));
 
-// Email Transporter
+
 const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: process.env.SMTP_PORT,
-  secure: false,
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true, // <--- Change this to true
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS
@@ -628,7 +628,7 @@ app.get('/api/admin/users', adminAuth, async (req, res) => {
     const users = await User.find({})
       .select('-password')
       .populate('referrer', 'username');
-    
+
     res.json({
       success: true,
       users: users.map(user => ({
