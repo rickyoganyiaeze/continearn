@@ -292,18 +292,40 @@ app.post('/api/auth/forgot-password', async (req, res) => {
 
     // Send email
     const resetUrl = `${req.protocol}://${req.get('host')}/reset-password.html?token=${resetToken}`;
-
- await transporter.sendMail({
-      from: '"Continearn" <rickyoganyiaeze@gmail.com>', // Use your verified Gmail here
+    await transporter.sendMail({
+      from: '"Continearn" <youremail@gmail.com>', // Keep your verified email here
       to: user.email,
       subject: 'Continearn - Reset Your Password',
       html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-          <h2 style="color: #10b981;">Password Reset Request</h2>
-          <p>You requested to reset your password. Click the button below to reset it:</p>
-          <a href="${resetUrl}" style="display: inline-block; background: #10b981; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; margin: 16px 0;">Reset Password</a>
-          <p>This link will expire in 30 minutes.</p>
-          <p>If you didn't request this, please ignore this email.</p>
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px;">
+          
+          <!-- Logo Section -->
+          <div style="text-align: center; margin-bottom: 20px;">
+            <img src="https://continearn.name.ng/logo.png" alt="Continearn Logo" style="width: 80px; height: 80px; border-radius: 50%;">
+            <h1 style="color: #10b981; margin: 10px 0 0 0;">Continearn</h1>
+          </div>
+
+          <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+
+          <!-- Content Section -->
+          <h2 style="color: #333; text-align: center;">Password Reset Request</h2>
+          <p style="color: #666; text-align: center;">Hello <strong>${user.username}</strong>,</p>
+          <p style="color: #666; text-align: center;">You requested to reset your password. Click the button below to proceed:</p>
+          
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${resetUrl}" style="background: #10b981; color: white; padding: 12px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">Reset Password</a>
+          </div>
+
+          <p style="color: #999; font-size: 0.9rem; text-align: center;">This link will expire in 30 minutes.</p>
+          <p style="color: #999; font-size: 0.9rem; text-align: center;">If you didn't request this, please ignore this email.</p>
+
+          <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+
+          <!-- Footer -->
+          <p style="color: #aaa; font-size: 0.8rem; text-align: center;">
+            © 2024 Continearn. All rights reserved.<br>
+            <a href="https://continearn.name.ng" style="color: #10b981; text-decoration: none;">Visit our website</a>
+          </p>
         </div>
       `
     });
@@ -735,6 +757,7 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
 
 
 
