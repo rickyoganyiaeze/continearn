@@ -68,7 +68,7 @@ const UserSchema = new mongoose.Schema({
   },
   isOnline: {
     type: Boolean,
-    default: true
+    default: false
   },
   // This is the Admin field added correctly
   isAdmin: {
@@ -127,3 +127,4 @@ UserSchema.methods.getReferralLink = function () {
 };
 
 module.exports = mongoose.model('User', UserSchema);
+
