@@ -27,9 +27,9 @@ mongoose.connect(process.env.MONGODB_URI)
 
 
 const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 465,
-  secure: true, // <--- Change this to true
+  host: process.env.SMTP_HOST, 
+  port: process.env.SMTP_PORT,
+  secure: false, // False for Port 587
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS
@@ -732,3 +732,4 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
