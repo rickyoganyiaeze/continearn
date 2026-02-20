@@ -160,7 +160,7 @@
     const token = localStorage.getItem('token');
 
     if (!token) {
-      window.location.href = 'index.html';
+      window.location.href = 'login.html';
     }
 
     async function loadDashboard() {
@@ -175,7 +175,7 @@
 
         if (!data.success) {
           localStorage.removeItem('token');
-          window.location.href = 'index.html';
+          window.location.href = 'login';
           return;
         }
 
@@ -198,7 +198,7 @@
       } catch (error) {
         console.error('Error loading dashboard:', error);
         localStorage.removeItem('token');
-        window.location.href = 'index.html';
+        window.location.href = 'login.html';
       }
     }
 
@@ -230,7 +230,7 @@
         console.error('Logout error:', error);
       }
       localStorage.removeItem('token');
-      window.location.href = 'index.html';
+      window.location.href = 'login.html';
     }
 
     // Handle Accept Button Click
@@ -275,7 +275,6 @@
 </body>
 
 </html>
-
 
 
 
