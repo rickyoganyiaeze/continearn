@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded', init);
 
 async function init() {
   if (!token) {
-    window.location.href = 'index.html';
+    window.location.href = 'login.html';
     return;
   }
 
@@ -107,7 +107,7 @@ async function init() {
 
     if (!data.success) {
       localStorage.removeItem('token');
-      window.location.href = 'index.html';
+      window.location.href = 'login.html';
       return;
     }
 
