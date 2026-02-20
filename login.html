@@ -4,15 +4,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Welcome to Continearn - Where you can play simple games, earn coins, and withdraw real money. Start earning today for free!">
+  <meta name="description"
+    content="Welcome to Continearn - Where you can play simple games, earn coins, and withdraw real money. Start earning today for free!">
   <meta name="keywords" content="earn money, play games, withdraw, coins, Nigeria, rewards">
   <meta name="robots" content="index, follow">
-    <link rel="shortcut icon" href="logo.png" type="image/x-icon">
+  <link rel="shortcut icon" href="logo.png" type="image/x-icon">
   <meta property="og:title" content="Login - Continearn">
   <meta property="og:description" content="Login to your Continearn account and start earning">
   <meta property="og:type" content="website">
   <title>Login - Continearn | Earn While You Play</title>
- 
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1280676879896534"
+    crossorigin="anonymous"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
@@ -29,6 +31,8 @@
       </div>
       <span class="auth-logo-text">Continearn</span>
     </div>
+
+  
 
     <div class="card auth-card fade-in stagger-2">
       <div class="auth-header">
@@ -136,22 +140,20 @@
       setTimeout(() => toast.remove(), 4000);
     }
 
-      function togglePassword(inputId, iconSpan) {
-    const input = document.getElementById(inputId);
-    const icon = iconSpan.querySelector('i');
-    if (input.type === 'password') {
-      input.type = 'text';
-      icon.classList.remove('fa-eye');
-      icon.classList.add('fa-eye-slash');
-    } else {
-      input.type = 'password';
-      icon.classList.remove('fa-eye-slash');
-      icon.classList.add('fa-eye');
+    function togglePassword(inputId, iconSpan) {
+      const input = document.getElementById(inputId);
+      const icon = iconSpan.querySelector('i');
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+      } else {
+        input.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+      }
     }
-  }
   </script>
 </body>
 
 </html>
-
-
