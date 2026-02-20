@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard.html
+Disallow: /games.html
+Disallow: /withdraw.html
+Disallow: /admin.html
+Disallow: /reset-password.html
+
+Sitemap: https://continearn.name.ng/sitemap.xml
