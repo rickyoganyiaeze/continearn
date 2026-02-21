@@ -109,7 +109,8 @@ const RPS_LEVELS = [
 ];
 // ===================== MIDDLEWARE =====================
 
-// Standard Auth Middleware
+
+// Auth Middleware
 const auth = async (req, res, next) => {
   try {
     const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
@@ -123,6 +124,10 @@ const auth = async (req, res, next) => {
     if (!req.user) {
       return res.status(401).json({ success: false, message: 'User not found' });
     }
+
+    // UPDATE LAST ACTIVITY (The Fix)
+    // We use 'findOneAndUpdate' to avoid triggering the 'save' hook which might hash passwords again
+    await User.findByIdAndUpdate(req.user._id, { lastActivity: Date.now() });
 
     next();
   } catch (error) {
@@ -323,7 +328,7 @@ app.post('/api/auth/forgot-password', async (req, res) => {
 
           <!-- Footer -->
           <p style="color: #aaa; font-size: 0.8rem; text-align: center;">
-            © 2024 Continearn. All rights reserved.<br>
+            © 2026 Continearn. All rights reserved.<br>
             <a href="https://continearn.name.ng" style="color: #10b981; text-decoration: none;">Visit our website</a>
           </p>
         </div>
@@ -364,6 +369,7 @@ app.post('/api/auth/reset-password', async (req, res) => {
 app.post('/api/auth/logout', auth, async (req, res) => {
   try {
     req.user.isOnline = false;
+    req.user.lastActivity = new Date(0); // Set time to 1970 (Instant Offline)
     await req.user.save();
     res.clearCookie('token');
     res.json({ success: true, message: 'Logged out successfully' });
@@ -656,22 +662,32 @@ app.get('/api/admin/users', adminAuth, async (req, res) => {
 
     res.json({
       success: true,
-      users: users.map(user => ({
-        id: user._id,
-        username: user.username,
-        email: user.email,
-        phone: user.phone,
-        bankName: user.bankName,
-        accountName: user.accountName,
-        accountNumber: user.accountNumber,
-        coins: user.coins,
-        naira: user.naira,
-        totalReferrals: user.referrals.length,
-        referrer: user.referrer?.username || 'None',
-        status: user.isOnline ? 'Online' : 'Offline', // THIS LINE IS IMPORTANT
-        createdAt: user.createdAt,
-        lastLogin: user.lastLogin
-      }))
+      users: users.map(user => {
+        // 1. Check if user clicked logout (isOnline false)
+        // 2. Check if user is inactive for 2 minutes (Ghost check)
+        const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000);
+        const isTimeActive = user.lastActivity && user.lastActivity > twoMinutesAgo;
+
+        // User is Online ONLY if they didn't logout AND they were active recently
+        const status = (user.isOnline && isTimeActive) ? 'Online' : 'Offline';
+
+        return {
+          id: user._id,
+          username: user.username,
+          email: user.email,
+          phone: user.phone,
+          bankName: user.bankName,
+          accountName: user.accountName,
+          accountNumber: user.accountNumber,
+          coins: user.coins,
+          naira: user.naira,
+          totalReferrals: user.referrals.length,
+          referrer: user.referrer?.username || 'None',
+          status: status, // Corrected Status Logic
+          createdAt: user.createdAt,
+          lastLogin: user.lastLogin
+        };
+      })
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -757,7 +773,6 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
-
 
 
 
