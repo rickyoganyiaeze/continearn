@@ -5,10 +5,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description"
-    content="Register to start earning money by play games, Sign up for free!">
+    content="Login to Continearn - To start earn coins, and withdraw real money. Start earning today for free!">
   <meta name="keywords" content="earn money, play games, withdraw, coins, Nigeria, rewards">
   <meta name="robots" content="index, follow">
-  <meta property="og:image" content="https://continearn.name.ng/logo.png">
+   <meta property="og:image" content="https://continearn.name.ng/logo.png">
   <link rel="shortcut icon" href="logo.png" type="image/x-icon">
   <meta property="og:title" content="Login - Continearn">
   <meta property="og:description" content="Login to your Continearn account and start earning">
@@ -22,6 +22,8 @@
     rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="css/style.css">
+  <!-- Google Sign-In Script -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 
 <body>
@@ -67,6 +69,23 @@
         </button>
       </form>
 
+            <!-- Google Login Section -->
+      <div style="margin: 24px 0; display: flex; align-items: center;">
+        <div style="flex: 1; height: 1px; background: var(--border-color);"></div>
+        <span style="padding: 0 16px; color: var(--fg-muted); font-size: 0.85rem;">OR</span>
+        <div style="flex: 1; height: 1px; background: var(--border-color);"></div>
+      </div>
+      
+      <!-- Hidden Google Button Container -->
+      <div id="googleBtn" style="display: none;"></div>
+      
+      <!-- Custom FontAwesome Button -->
+      <button type="button" id="customGoogleBtn" class="btn btn-secondary btn-full btn-lg">
+         <i class="fab fa-google" style="margin-right: 10px;"></i>
+         Continue with Google
+      </button>
+      <!-- End Google Login Section -->
+
       <div class="auth-footer">
         <p class="mb-2">
           <a href="forgot-password.html" class="text-accent">Forgot password?</a>
@@ -82,6 +101,7 @@
 
   <script src="js/auth.js"></script>
   <script>
+    // Regular Login Form Logic
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
       e.preventDefault();
 
@@ -129,6 +149,54 @@
       }
     });
 
+    // Google Login Logic
+    function handleCredentialResponse(response) {
+      // Send token to backend
+      fetch('/api/auth/google', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ credential: response.credential })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          localStorage.setItem('token', data.token);
+          showToast('Login successful! Redirecting...', 'success');
+          setTimeout(() => { window.location.href = 'dashboard.html'; }, 1000);
+        } else {
+          showToast(data.message || 'Google login failed', 'error');
+        }
+      })
+      .catch(err => {
+        showToast('An error occurred with Google login', 'error');
+      });
+    }
+
+       // Initialize Google Button
+    window.onload = function () {
+       if (google && google.accounts) {
+          google.accounts.id.initialize({
+             client_id: "731521876001-olejentcm4fa1o0fldbbb24nfetse3p6.apps.googleusercontent.com",
+             callback: handleCredentialResponse
+          });
+          // Render the hidden button
+          google.accounts.id.renderButton(
+             document.getElementById("googleBtn"),
+             { type: "standard", theme: "outline", size: "large" } 
+          );
+          
+          // Attach click listener to our custom button
+          document.getElementById('customGoogleBtn').addEventListener('click', function() {
+             // Find the actual Google button inside the hidden container and click it
+             const realGoogleBtn = document.querySelector("#googleBtn div[role='button']");
+             if (realGoogleBtn) {
+                 realGoogleBtn.click();
+             }
+          });
+       }
+    };
+
+    // Helper Functions
     function showToast(message, type) {
       const container = document.getElementById('toastContainer');
       const toast = document.createElement('div');
@@ -157,7 +225,4 @@
   </script>
 </body>
 
-
 </html>
-
-
