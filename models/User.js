@@ -62,10 +62,19 @@ const UserSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
-  lastLogin: {
+    lastLogin: {
     type: Date,
     default: Date.now
   },
+  lastActivity: {
+    type: Date,
+    default: Date.now
+  },
+  isOnline: {
+    type: Boolean,
+    default: false
+  },
+  
   isOnline: {
     type: Boolean,
     default: false
@@ -127,4 +136,3 @@ UserSchema.methods.getReferralLink = function () {
 };
 
 module.exports = mongoose.model('User', UserSchema);
-
