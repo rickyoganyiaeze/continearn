@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <meta property="og:image" content="https://continearn.name.ng/logo.png">
+
   <title>Admin - Continearn</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-   <link rel="shortcut icon" href="logo.png" type="image/x-icon">
+  <link rel="shortcut icon" href="logo.png" type="image/x-icon">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
- <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="css/style.css">
@@ -24,107 +25,107 @@
   <div id="adminContent" style="display: none;">
     <header class="admin-header">
       <div class="admin-title">
-             <img src="logo.png" alt="" width="50">
-        </div>
-        <h2>Continearn Admin</h2>
+        <img src="logo.png" alt="" width="50">
       </div>
-      <nav class="admin-nav">
-        <button class="admin-nav-btn active" data-tab="users">Users</button>
-        <button class="admin-nav-btn" data-tab="withdrawals">Withdrawals</button>
-      </nav>
-      <a href="index.html" class="btn btn-sm btn-secondary">
-        <i class="fas fa-sign-out-alt"></i> Exit
-      </a>
-    </header>
+      <h2>Continearn Admin</h2>
+  </div>
+  <nav class="admin-nav">
+    <button class="admin-nav-btn active" data-tab="users">Users</button>
+    <button class="admin-nav-btn" data-tab="withdrawals">Withdrawals</button>
+  </nav>
+  <a href="login.html" class="btn btn-sm btn-secondary">
+    <i class="fas fa-sign-out-alt"></i> Exit
+  </a>
+  </header>
 
-    <main class="admin-content">
-      <!-- Users Tab -->
-      <section id="users-tab">
-        <div class="admin-stats" id="usersStats">
-          <div class="admin-stat-card">
-            <p class="admin-stat-value" id="totalUsers">0</p>
-            <p class="admin-stat-label">Total Users</p>
-          </div>
-          <div class="admin-stat-card">
-            <p class="admin-stat-value" id="onlineUsers">0</p>
-            <p class="admin-stat-label">Online Now</p>
-          </div>
-          <div class="admin-stat-card">
-            <p class="admin-stat-value" id="totalCoinsDistributed">0</p>
-            <p class="admin-stat-label">Coins Distributed</p>
-          </div>
-          <div class="admin-stat-card">
-            <p class="admin-stat-value">₦<span id="totalNairaDistributed">0</span></p>
-            <p class="admin-stat-label">Total Earnings</p>
-          </div>
+  <main class="admin-content">
+    <!-- Users Tab -->
+    <section id="users-tab">
+      <div class="admin-stats" id="usersStats">
+        <div class="admin-stat-card">
+          <p class="admin-stat-value" id="totalUsers">0</p>
+          <p class="admin-stat-label">Total Users</p>
         </div>
+        <div class="admin-stat-card">
+          <p class="admin-stat-value" id="onlineUsers">0</p>
+          <p class="admin-stat-label">Online Now</p>
+        </div>
+        <div class="admin-stat-card">
+          <p class="admin-stat-value" id="totalCoinsDistributed">0</p>
+          <p class="admin-stat-label">Coins Distributed</p>
+        </div>
+        <div class="admin-stat-card">
+          <p class="admin-stat-value">₦<span id="totalNairaDistributed">0</span></p>
+          <p class="admin-stat-label">Total Earnings</p>
+        </div>
+      </div>
 
-        <div class="data-table-wrapper">
-          <div class="data-table">
-            <table>
-              <thead>
-                <tr>
-                  <th>Username</th>
-                  <th>Email</th>
-                  <th>Phone</th>
-                  <th>Bank</th>
-                  <th>Account</th>
-                  <th>Coins</th>
-                  <th>Naira</th>
-                  <th>Referrals</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody id="usersTableBody"></tbody>
-            </table>
-          </div>
+      <div class="data-table-wrapper">
+        <div class="data-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Bank</th>
+                <th>Account</th>
+                <th>Coins</th>
+                <th>Naira</th>
+                <th>Referrals</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="usersTableBody"></tbody>
+          </table>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <!-- Withdrawals Tab -->
-      <section id="withdrawals-tab" style="display: none;">
-        <div class="admin-stats">
-          <div class="admin-stat-card">
-            <p class="admin-stat-value">₦<span id="pendingAmount">0</span></p>
-            <p class="admin-stat-label">Pending Withdrawals</p>
-          </div>
-          <div class="admin-stat-card">
-            <p class="admin-stat-value" id="pendingCount">0</p>
-            <p class="admin-stat-label">Pending Requests</p>
-          </div>
+    <!-- Withdrawals Tab -->
+    <section id="withdrawals-tab" style="display: none;">
+      <div class="admin-stats">
+        <div class="admin-stat-card">
+          <p class="admin-stat-value">₦<span id="pendingAmount">0</span></p>
+          <p class="admin-stat-label">Pending Withdrawals</p>
         </div>
+        <div class="admin-stat-card">
+          <p class="admin-stat-value" id="pendingCount">0</p>
+          <p class="admin-stat-label">Pending Requests</p>
+        </div>
+      </div>
 
-        <div class="data-table-wrapper">
-          <div class="data-table">
-            <table>
-              <thead>
-                <tr>
-                  <th>User</th>
-                  <th>Amount</th>
-                  <th>Bank</th>
-                  <th>Account</th>
-                  <th>Status</th>
-                  <th>Date</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody id="withdrawalsTableBody"></tbody>
-            </table>
-          </div>
+      <div class="data-table-wrapper">
+        <div class="data-table">
+          <table>
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Amount</th>
+                <th>Bank</th>
+                <th>Account</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="withdrawalsTableBody"></tbody>
+          </table>
         </div>
-      </section>
-    </main>
+      </div>
+    </section>
+  </main>
   </div>
 
   <div class="toast-container" id="toastContainer"></div>
 
   <script>
     const token = localStorage.getItem('token');
-    
+
     // 1. Check if user is logged in
     if (!token) {
-      window.location.href = 'index.html';
+      window.location.href = 'login.html';
     }
 
     // 2. On load, verify if user is Admin
@@ -145,12 +146,12 @@
         // If admin, show content and load data
         document.getElementById('loadingOverlay').style.display = 'none';
         document.getElementById('adminContent').style.display = 'block';
-        
+
         loadUsers();
         loadWithdrawals();
 
       } catch (error) {
-        window.location.href = 'index.html';
+        window.location.href = 'login.html';
       }
     }
 
@@ -159,7 +160,7 @@
       btn.addEventListener('click', () => {
         document.querySelectorAll('.admin-nav-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        
+
         const tab = btn.dataset.tab;
         document.getElementById('users-tab').style.display = tab === 'users' ? 'block' : 'none';
         document.getElementById('withdrawals-tab').style.display = tab === 'withdrawals' ? 'block' : 'none';
@@ -310,9 +311,13 @@
 
     // Initialize
     initAdmin();
+
+    // START AUTO REFRESH (Every 2 seconds)
+    setInterval(() => {
+      loadUsers();
+      loadWithdrawals();
+    }, 2000); // 2000 milliseconds = 2 seconds
   </script>
 </body>
+
 </html>
-
-
-
