@@ -7,7 +7,8 @@ const cookieParser = require('cookie-parser');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 const path = require('path');
-
+const { OAuth2Client } = require('google-auth-library');
+const googleClient = new OAuth2Client();
 const User = require('./models/User');
 const Withdrawal = require('./models/Withdrawal');
 const ResetToken = require('./models/ResetToken');
@@ -338,6 +339,64 @@ app.post('/api/auth/forgot-password', async (req, res) => {
     res.json({ success: true, message: 'Password reset email sent' });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Google Login Route
+app.post('/api/auth/google', async (req, res) => {
+  const { credential } = req.body;
+  
+  try {
+    // Verify Google Token
+    const ticket = await googleClient.verifyIdToken({
+        idToken: credential,
+        audience: "731521876001-olejentcm4fa1o0fldbbb24nfetse3p6.apps.googleusercontent.com"
+    });
+    
+    const payload = ticket.getPayload();
+    const { sub: googleId, email, name } = payload;
+
+    // Check if user exists
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      // Create new user
+      user = new User({
+        username: name.replace(/\s+/g, '').toLowerCase() + Math.floor(Math.random() * 1000),
+        email,
+        googleId,
+        phone: '08000000000', // Default phone
+        password: require('crypto').randomBytes(16).toString('hex') // Random password
+      });
+      await user.save();
+    } else {
+      // Update googleId if missing
+      if (!user.googleId) {
+        user.googleId = googleId;
+        await user.save();
+      }
+    }
+
+    // Generate your App Token
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRE });
+
+    res.json({ 
+      success: true, 
+      token,
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        coins: user.coins,
+        naira: user.naira,
+        referralCode: user.referralCode,
+        isAdmin: user.isAdmin
+      }
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ success: false, message: 'Google login failed' });
   }
 });
 
